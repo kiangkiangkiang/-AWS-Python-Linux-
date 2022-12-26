@@ -1,0 +1,678 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>如何在AWS上使用Python（Linux）</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="caa27944-5b45-473c-8bf6-77a5f07e175a" class="page sans"><header><h1 class="page-title">如何在AWS上使用Python（Linux）</h1></header><div class="page-body"><p id="d70be4b8-0607-4ac6-9c0a-c1f38093633f" class="">👋  紀錄要如何用AWS裡面的內容</p><p id="a6cf4c61-fc6c-486c-9f0d-fdd983a8575e" class="">👋  紀錄python如何在開好的個體上跑</p><p id="253b5d06-03f6-44c3-a29e-9ba7c5e78284" class="">👋  一些linux語法</p><hr id="d4dac1bd-7500-42f3-baea-b538b82e520c"/><h3 id="92816c8f-bfca-4537-8812-bc7daa36154f" class="">教學連結：</h3><figure id="38178293-1593-4f43-a987-17dcfbc70d91"><a href="https://ithelp.ithome.com.tw/articles/10235549" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">AWS新手的30天之旅 - 1. Cloud簡介 - iT 邦幫忙::一起幫忙解決難題，拯救 IT 人的一天</div><div class="bookmark-description">近年來Cloud Solution越來越火紅，原因無他，還是因為方便。 以往當需要機器時，只能好聲好氣的跟infra團隊要機器，有機器就算了，當遇到要採購一等就是幾個月...</div></div><div class="bookmark-href"><img src="https://ithelp.ithome.com.tw/storage/favicons/favicon-16x16.png" class="icon bookmark-icon"/>https://ithelp.ithome.com.tw/articles/10235549</div></div><img src="https://www.perl.com/images/deploy-a-static-website-with-aws-s3-and-paws/aws-logo.png" class="bookmark-image"/></a></figure><figure id="8261f387-6486-42a2-8a31-3df5896bfc9e"><a href="https://www.ecloudture.com/%E9%80%A3%E7%B7%9A%E8%87%B3ec2%E7%9A%84%E4%B8%89%E7%A8%AE%E6%96%B9%E6%B3%95%E8%88%87%E6%AF%94%E8%BC%83-ssh%EF%BC%8Cec2%E5%AF%A6%E4%BE%8B%E9%80%A3%E6%8E%A5%EF%BC%8C%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">連線至 EC2 的三種方法與比較 - SSH、EC2 Instance Connect、System Manager</div><div class="bookmark-description">遠端連線提供使用者由遠端透過文字或圖形介面的方式來登入系統， 讓你在遠端的工作機前面登入 Linux 主機以取得可操控主機之介面 (shell)，而登入後的操作感覺上就像坐在系統前面一樣，使用者往往會因為某些原因，像是設置系統的記錄檔(log)、除錯或做一些細部的調校而從遠端連入主機當中。 隨著雲端產業的興起，遠端連線卻成了我們與這些看不到在哪的虛擬機唯一的溝通方式，而這也是我們此篇文章所要探討的主題。 我們將從最原始的 SSH 連線開始，並帶大家認識 AWS 所提供的遠端連線方式：EC2 Instance Connect 與 System Manager - Session Manager，並會針對兩者進行深入的探討與比較。 SSH 連線是目前最廣泛使用的 Linux 主機的遠端連線方式。它是於 1995 年被制定的通訊協定，是一個建立在應用層和傳輸層基礎上的安全協定，而目前預設會被安裝在所有 Linux 主機上。 當我們在 EC2 主控台中創建好執行個體後，我們便可以利用 SSH 來連入這台機器當中。 使用 SSH 連線有幾個基本條件： 以上就是最基本的 SSH 連線至 EC2 主機的方式。 AWS 在 2019/06 月底時更新了一個更簡易的 SSH 遠端連線至 EC2 的新方式：EC2 Instance Connect，主打無需維護金鑰，可直接透過</div></div><div class="bookmark-href"><img src="https://www.ecloudture.com/wp-content/uploads/2018/09/cropped-app-icon512-192x192.png" class="icon bookmark-icon"/>https://www.ecloudture.com/%E9%80%A3%E7%B7%9A%E8%87%B3ec2%E7%9A%84%E4%B8%89%E7%A8%AE%E6%96%B9%E6%B3%95%E8%88%87%E6%AF%94%E8%BC%83-ssh%EF%BC%8Cec2%E5%AF%A6%E4%BE%8B%E9%80%A3%E6%8E%A5%EF%BC%8C%E7%B3%BB%E7%B5%B1%E7%AE%A1%E7%90%86/</div></div><img src="https://www.ecloudture.com/wp-content/uploads/2019/10/instance_connect-3-e1570612708173.jpg" class="bookmark-image"/></a></figure><figure id="db210ffa-4ad4-4a67-9603-f1b323de8ba5"><a href="https://linux.vbird.org/linux_basic_train/centos8/unit03.php" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">第 3 堂課：檔案管理與 vim 初探</div><div class="bookmark-description">前一堂課讀者應該稍微接觸 Linux 檔案的管理，這一堂課我們將較深入的操作 Linux 檔案管理。 此外，本堂課亦會介紹未來會一直使用的 vim 程式編輯器，學會 vim 對於系統管理員來說，是相當重要的任務！ 雖然某些時刻系統可能只會提供 vi 而已，但是，我們使用者一般操作 Linux 時，個人建議還是學會 vim 更好！ 在 Linux 底下，所有的東西都以檔案來呈現，不同的檔案特性會有不同的結果。讀者可以常見的兩種檔案格式為： 一般檔案：實際放置資料的檔案 目錄檔案：重點在放置『檔名』，並沒有實際的資料 為何需要目錄檔？讀者可以想像，如果僅有一個櫃子，你將所有書籍全部丟進同一個櫃子中，則未來要找資料時，會很難找尋 (因為單品太多)。 若可以有多個櫃子，將不同的資料分類放置於各別的櫃子中，未來要找某一類別的資料，只要找到該類別的櫃子，就能夠快速的找到資料 (單品較少)， 這就是目錄檔案的重點。 前一堂課已經談過，目錄的建立主要使用 mkdir 這個指令，這個指令將建立一個『空目錄』。所謂的『空目錄』意指該目錄內並沒有其他檔案的存在。 至於刪除目錄則使用 rmdir 這個指令，但同理，這個指令僅能『刪除空目錄』而已。 例題 3.1.1-1：了解基礎的工作目錄切換、觀察隱藏檔、複製檔案、刪除非空白目錄等任務。請以 student 身份完成下列動作。 前往 /dev/shm 目錄 建立名為 class3 的目錄 觀察 /dev/shm/class3 這個目錄的內容，並請說明內部有沒有其他檔案 (註：使用 ll 加上顯示隱藏檔的選項) 透過 cp /etc/hosts /dev/shm/class3 將檔案複製到該目錄內，並觀察 class3 目錄的內容 使用 rmdir /dev/shm/class3 嘗試刪除該目錄，並說明可以或不行刪除該目錄的原因 使用 rm 可以刪除檔案，但預設 rm 僅能刪除一般檔案無法刪除目錄，除非加上某些選項才行。 例題 3.1.1-2：讓含有資料的目錄變成空目錄，再以 rmdir 刪除 承上一個例題，進入到 /dev/shm/class3 當中，並且使用 rm 刪除掉所有該目錄下的檔案 (非隱藏檔) 回到 /dev/shm 當中，此時能否使用 rmdir 刪除 class3 目錄？為什麼？ 當使用 ll dirname 時，預設會顯示出『該目錄下的檔名』，因為目錄的內容就是檔名資料。若讀者需要了解到目錄本身的資訊，而不是目錄的內容， 可以使用 -d 的選項，如下範例： [student@localhost ~]$ ll /etc/cron.d 總計 8 -rw-r--r--.</div></div><div class="bookmark-href"><img src="https://linux.vbird.org/include/favicon.ico" class="icon bookmark-icon"/>https://linux.vbird.org/linux_basic_train/centos8/unit03.php</div></div><img src="https://linux.vbird.org/linux_basic_train/centos8/unit03/vim.jpg" class="bookmark-image"/></a></figure><figure id="31f5d4bd-e9a1-4d5e-ae35-b3892cc761a4"><a href="https://medium.com/@christyjacob4/using-vscode-remotely-on-an-ec2-instance-7822c4032cff" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Using VSCode remotely on an EC2 instance</div><div class="bookmark-description">I recently started using EC2 for my deep-learning workloads and I was extremely bothered by the fact that I have to use either vi or some other boring IDE. Trust me, these editors are great but achieving feats like debugging and easily navigating between files, getting to view the folder structure etc.</div></div><div class="bookmark-href"><img src="https://miro.medium.com/1*m-R_BkNf1Qjr1YbyOIJY2w.png" class="icon bookmark-icon"/>https://medium.com/@christyjacob4/using-vscode-remotely-on-an-ec2-instance-7822c4032cff</div></div><img src="https://miro.medium.com/max/1200/0*r4gk5n4W5Djj-Zbn" class="bookmark-image"/></a></figure><hr id="045fbd50-0fcf-4394-a408-a3787ac02102"/><p id="40068cc1-d3b8-4de4-8c5b-52ea63f7fa4c" class="">
+</p><h2 id="07a87e81-6598-42e4-bda0-13b14ce90f25" class="">AWS基本創建instance(個體)</h2><ol type="1" id="96fce0ae-54cf-482a-9bbd-7993f1f5e5fd" class="numbered-list" start="1"><li>去EC2的介面中，點選“啟用執行個體” （相當於在雲端建立一台機器（電腦），接著要設定你要建立什麼機器）</li></ol><ol type="1" id="4d4f6cd6-76f0-4909-9dee-530a614f22a2" class="numbered-list" start="2"><li>設定參數（這台機器要有什麼資源），OS的部分建議linux或ubuntu(mac或windows要收os的錢)：<ol type="a" id="6926cb45-710d-4e5d-adde-6d9d8fbb1998" class="numbered-list" start="1"><li>執行個體類型（這台機器的配備，最簡單測試的就用t2-micro就好，如果要用GPU或是其他的話再設定別的）</li></ol><ol type="a" id="8bccd84b-cd27-482e-a568-c57cb376ddad" class="numbered-list" start="2"><li>VPC類似你連到雲端的哪個網域（這部分不台確定），這邊預設就好</li></ol><ol type="a" id="f35addc5-951d-4b56-82ae-d84a18eed6e4" class="numbered-list" start="3"><li>金鑰的部分給個名稱，其他參數先不用特別設定 (好的之後就會自動幫你下載下來一個金鑰)</li></ol><ol type="a" id="2a6f2c57-e00c-4ce1-801f-518ad8e3498b" class="numbered-list" start="4"><li>往下走，網路設定點開後“<strong>安全群組規則</strong>”決定哪個IP可以連進這個機器，因此這邊要特別設定成“我的ＩＰ”，（如果之後要從家裡連進來，再把家裡的IP新增進來），<strong>note: 0.0.0.0就是隨便的人都可以連進來</strong>，另外這邊的名稱可以設定一下，類似設定成一個資料夾好管理的概念，把之後你的連線都放到此資料夾（設定的名稱）</li></ol><ol type="a" id="7d9180cd-9006-4373-a697-37c16ddf7b9e" class="numbered-list" start="5"><li>設定儲存：可以選擇機器要多少的硬碟及硬碟的等級，因為是測試用，所以這邊一樣預設即可</li></ol></li></ol><ol type="1" id="bb534ece-4654-44a3-a5ec-454da47a75dd" class="numbered-list" start="3"><li>好了之後就直接建立執行個體 （亮綠色的就代表可以跑他了），到這步之後，相當於你已經在雲端<strong>啟動</strong>一台機器（電腦），這台機器的硬體就是剛剛設定好的參數，連到雲端的哪邊就是VPC的設定，至於要怎麼連進去以及誰可以連呢？就是金鑰和安全群組的設定。</li></ol><ol type="1" id="740aeb93-006b-4197-954b-895fff6f3eef" class="numbered-list" start="4"><li>啟動好了就可以試玩看看（不用怕直接跑吧），左邊ec2儀表板，執行中個體，就可以找到你的剛剛設定的機器名字 (或直接在輸入的地方輸入你的名字ex. lab_test_luka)，點進執行個體ID之後就可以看到“連線”，點選進去之後可以看到有個範例的command（例如我的是ssh -i &quot;test_key_luka.pem” ……）複製那行之後就可以準備進入你的機器啦！</li></ol><ol type="1" id="31a7b447-23c1-480a-8af7-7d62ee0a8817" class="numbered-list" start="5"><li>準備進入虛擬機器，開啟terminal，進入你剛剛下載好金鑰的位置（例如我的金鑰test_key_luka.pem存在桌面→work內）就是</li></ol><figure id="655be7de-80d9-4df2-a542-e2b922abc607" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled.png"><img style="width:480px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled.png"/></a></figure><ol type="1" id="226d6a3e-89d5-4a58-87cb-05a05b4fc812" class="numbered-list" start="6"><li>成功進去之後就幫剛剛複製的command貼上（前面加sudo，ex. sudo ssh -i “test_key_luka.pem”……），接著輸入這台電腦的密碼（有yes就yes）最後看到以下畫面就代表成功進去剛剛建起來的linux機器啦！(第一次用的話別懷疑，這個terminal就可以想像成你的桌面了)</li></ol><ol type="1" id="d3194f3d-0e12-4dd9-88c6-9e046db51d59" class="numbered-list" start="7"><li>接下來因為已經進入機器內（linux作業系統），因此要怎麼操作都要靠linux語法</li></ol><figure id="004b6004-7b64-4b0c-abc8-60db27b38192" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%201.png"><img style="width:1326px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%201.png"/></a></figure><h3 id="67c28849-0aef-4390-8245-34e9e2198f5a" class="">其他：</h3><ul id="a4668c85-5918-43d0-8545-b29902de9c93" class="bulleted-list"><li style="list-style-type:disc">如果要從linux的terminal出來，可以輸入”exit”，但這樣他還是會在雲端上執行，因此要<strong>暫停</strong>的話可以回到剛剛aws頁面中的這個個體上，點選“執行個體狀態”，停止他</li></ul><ul id="1d90eb7b-9b1d-475a-92ca-83d0cfdf2a7b" class="bulleted-list"><li style="list-style-type:disc">呈上，如果是要把這個個體給砍了（個體內所有東西都會被刪掉），就點終止</li></ul><ul id="32d0d037-4cea-40ec-9deb-3e054292368a" class="bulleted-list"><li style="list-style-type:disc">cd ../.. 可以看到這台機器的底層架構（文件）</li></ul><hr id="4e8f20de-5707-4bee-a6bb-642168f1db3c"/><p id="3a8f1f59-626b-46e3-b3e4-e044400ccd6c" class="">
+</p><h2 id="dda49346-2969-45c4-8804-3952d0222e1d" class="">如何使用python</h2><blockquote id="4ed32852-07f1-475b-9560-dc7525f1d357" class="block-color-gray">這邊的想法是希望先在本機上面寫好一個python檔，或是一個app，之後透過一個<span style="border-bottom:0.05em solid"><strong>媒介</strong></span>放到linux上運行，因此<span style="border-bottom:0.05em solid"><strong>媒介</strong></span>的選擇可以分成以下兩種：<p id="8621d86d-34b8-4014-8ad5-2a4985e81074" class="">1. Docker: 可以先在linux上下載好docker，本機上也建立好一個docker image後，把我們既有的py檔案丟到instance內，再讓linux上運行這個image。</p><p id="33c0cdb6-8fca-4098-bf2f-b95457fccecf" class="">2. <strong><strong>Using VSCode remotely on an EC2 instance：</strong></strong>想法是直接從地端遠端連線(<a href="https://ithelp.ithome.com.tw/articles/10277498">SSH</a>)到雲端instance上</p></blockquote><p id="c4e1f82d-5335-4490-b31b-81ef1bd5e406" class="">
+</p><p id="ad52ab79-7cdd-401e-8e38-9ea93aad6ace" class="">這邊我們選擇比較簡單的第2種版本：</p><ol type="1" id="42674548-812e-4fb7-9cf2-ec7786a639b8" class="numbered-list" start="1"><li>確認Python已安裝好：</li></ol><pre id="c0f65dcf-4a27-46bf-b7e5-f4e1bca6b131" class="code"><code>python3 --version </code></pre><p id="857d81f6-af49-4874-8cc1-a1bf53131051" class="">       若有版本代表已有python:</p><figure id="f3d32cc6-cbf3-4368-b18b-8d9b751a18b5" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%202.png"><img style="width:240px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%202.png"/></a></figure><ol type="1" id="147f83e3-4cab-4847-adbc-e088cdbb8da7" class="numbered-list" start="2"><li>建立一個資料夾，當作可以存放工作用的資料夾，輸入mkdir YOUR_FOLDER_NAME，YOUR_FOLDER_NAME我是設定work代表資料夾名稱，之後進入資料夾</li></ol><pre id="7a74e75e-8c35-4f35-8242-abb994f65d57" class="code"><code>mkdir work
+cd work</code></pre><ol type="1" id="0aa0a1b4-73e9-410b-b4e9-db768d56c0c1" class="numbered-list" start="3"><li>在本地端下載好vscode後，在vscode內下載“<strong>Remote-SSH”</strong>好了後就會在左下角看到綠色的icon:</li></ol><figure id="8d5fded8-3447-4181-bbad-7459b2531c37" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%203.png"><img style="width:212px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%203.png"/></a></figure><p id="edba9596-92ba-4a8a-9691-1693af86add8" class="">
+</p><ol type="1" id="1181f8dd-1dc8-42bf-b9a2-9430ba6a8a05" class="numbered-list" start="4"><li>點綠色的icon，在vscode上面輸入configure(open configuration file），點第一個user/…/../config進去</li></ol><ol type="1" id="fc8b09a9-a472-4985-be53-48dffe843975" class="numbered-list" start="5"><li>開始照下圖編輯吧：</li></ol><figure id="fbf7f806-7b78-439b-94ee-f5e38724313c" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%204.png"><img style="width:1402px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%204.png"/></a></figure><ol type="1" id="90a8abc8-8b9e-4db0-93a0-d390f493bc82" class="numbered-list" start="6"><li>設定好了之後，回去點綠色的icon，連host，就可以看到剛剛設定的東西了！</li></ol><ol type="1" id="6f6c6679-e2a7-4f95-be33-3d905ac4e445" class="numbered-list" start="7"><li>接著在本機terminal中cd目錄到你的key底下，<a href="https://stackoverflow.com/questions/60675232/ssh-in-vscode-error-permission-denied-publickey-password">輸入</a>：</li></ol><pre id="59b14cfc-283a-4475-ab6b-592975af5416" class="code"><code>chmod 400 YOUR_KEY.pem</code></pre><ol type="1" id="6ba8dcef-8835-4189-813b-cfff8d645945" class="numbered-list" start="8"><li>最後切回vscode，點左下角的icon，connect host，點剛剛的aws-ec2，就可以啦<p id="911661a3-f054-4d91-a3cf-9a786a4b3061" class="">左下角顯示SSH: aws-ec2代表成功了</p><figure id="2a067e52-6fde-46a8-80e8-39c4705d9eb1" class="image"><a href="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%205.png"><img style="width:288px" src="%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%205.png"/></a></figure></li></ol><p id="bdbdfe35-e8cb-4264-920e-426456151904" class="">
+</p><hr id="48471bc3-d568-4383-9f0d-38efce8539cf"/><p id="edd9581f-8894-4456-8009-56fdcc64f58f" class="">
+</p><p id="56160128-e2b3-4b2c-92b3-c0cf6c6d7e8a" class="">最後我們隨便測試看看吧，直接open folder到剛剛的work目錄底下，new一個hellow world的檔案就直接測試吧！</p><p id="d4a6f28e-c6ce-46ec-9c05-0f07b932f9e0" class="">
+</p><h2 id="93bb5778-b9ed-4535-9e95-3956792396a6" class="">第一種版本 (Docker):</h2><p id="f1058b8b-130e-47f2-987c-56d3dea8eae3" class="">待更</p><p id="9fe24040-b0b9-4369-a5b9-ee4ccf93f03f" class="">
+</p></div></article></body></html>
