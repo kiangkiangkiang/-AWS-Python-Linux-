@@ -35,7 +35,7 @@
 4. 啟動好了就可以試玩看看（不用怕直接跑吧），左邊ec2儀表板，執行中個體，就可以找到你的剛剛設定的機器名字 (或直接在輸入的地方輸入你的名字ex. lab_test_luka)，點進執行個體ID之後就可以看到“連線”，點選進去之後可以看到有個範例的command（例如我的是ssh -i "test_key_luka.pem” ……）複製那行之後就可以準備進入你的機器啦！
 5. 準備進入虛擬機器，開啟terminal，進入你剛剛下載好金鑰的位置（例如我的金鑰test_key_luka.pem存在桌面→work內）就是
 
-![Untitled](如何在AWS上使用Python（Linux）/Untitled.png)
+![Untitled](如何在AWS上使用Python（Linux )/Untitled.png)
 
 1. 成功進去之後就幫剛剛複製的command貼上（前面加sudo，ex. sudo ssh -i “test_key_luka.pem”……），接著輸入這台電腦的密碼（有yes就yes）最後看到以下畫面就代表成功進去剛剛建起來的linux機器啦！(第一次用的話別懷疑，這個terminal就可以想像成你的桌面了)
 2. 接下來因為已經進入機器內（linux作業系統），因此要怎麼操作都要靠linux語法
