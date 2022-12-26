@@ -1,5 +1,7 @@
 # 如何在AWS上使用Python（Linux）
 
+👋  來自: https://famous-grape-0b8.notion.site/AWS-Python-Linux-caa279445b45473c8bf677a5f07e175a
+
 👋  紀錄要如何用AWS裡面的內容
 
 👋  紀錄python如何在開好的個體上跑
@@ -33,12 +35,12 @@
 4. 啟動好了就可以試玩看看（不用怕直接跑吧），左邊ec2儀表板，執行中個體，就可以找到你的剛剛設定的機器名字 (或直接在輸入的地方輸入你的名字ex. lab_test_luka)，點進執行個體ID之後就可以看到“連線”，點選進去之後可以看到有個範例的command（例如我的是ssh -i "test_key_luka.pem” ……）複製那行之後就可以準備進入你的機器啦！
 5. 準備進入虛擬機器，開啟terminal，進入你剛剛下載好金鑰的位置（例如我的金鑰test_key_luka.pem存在桌面→work內）就是
 
-![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled.png)
+![Untitled](如何在AWS上使用Python（Linux）/Untitled.png)
 
 1. 成功進去之後就幫剛剛複製的command貼上（前面加sudo，ex. sudo ssh -i “test_key_luka.pem”……），接著輸入這台電腦的密碼（有yes就yes）最後看到以下畫面就代表成功進去剛剛建起來的linux機器啦！(第一次用的話別懷疑，這個terminal就可以想像成你的桌面了)
 2. 接下來因為已經進入機器內（linux作業系統），因此要怎麼操作都要靠linux語法
 
-![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%201.png)
+![Untitled](如何在AWS上使用Python（Linux）/Untitled%201.png)
 
 ### 其他：
 
@@ -55,7 +57,7 @@
 > 
 > 1. Docker: 可以先在linux上下載好docker，本機上也建立好一個docker image後，把我們既有的py檔案丟到instance內，再讓linux上運行這個image。
 > 
-> 2. ****Using VSCode remotely on an EC2 instance：****想法是直接從地端遠端連線([SSH](https://ithelp.ithome.com.tw/articles/10277498))到雲端instance上
+> 2. **Using VSCode remotely on an EC2 instance：**想法是直接從地端遠端連線([SSH](https://ithelp.ithome.com.tw/articles/10277498))到雲端instance上
 > 
 
 這邊我們選擇比較簡單的第2種版本：
@@ -68,7 +70,7 @@
 
        若有版本代表已有python:
 
-![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%202.png)
+![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20/Untitled%202.png)
 
 1. 建立一個資料夾，當作可以存放工作用的資料夾，輸入mkdir YOUR_FOLDER_NAME，YOUR_FOLDER_NAME我是設定work代表資料夾名稱，之後進入資料夾
 
@@ -79,12 +81,12 @@ cd work
 
 1. 在本地端下載好vscode後，在vscode內下載“**Remote-SSH”**好了後就會在左下角看到綠色的icon:
 
-![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%203.png)
+![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20/Untitled%203.png)
 
 1. 點綠色的icon，在vscode上面輸入configure(open configuration file），點第一個user/…/../config進去
 2. 開始照下圖編輯吧：
 
-![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%204.png)
+![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20/Untitled%204.png)
 
 1. 設定好了之後，回去點綠色的icon，連host，就可以看到剛剛設定的東西了！
 2. 接著在本機terminal中cd目錄到你的key底下，[輸入](https://stackoverflow.com/questions/60675232/ssh-in-vscode-error-permission-denied-publickey-password)：
@@ -97,7 +99,7 @@ chmod 400 YOUR_KEY.pem
     
     左下角顯示SSH: aws-ec2代表成功了
     
-    ![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20caa279445b45473c8bf677a5f07e175a/Untitled%205.png)
+    ![Untitled](%E5%A6%82%E4%BD%95%E5%9C%A8AWS%E4%B8%8A%E4%BD%BF%E7%94%A8Python%EF%BC%88Linux%EF%BC%89%20/Untitled%205.png)
     
 
 ---
